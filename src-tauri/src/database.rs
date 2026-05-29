@@ -33,6 +33,11 @@ pub async fn establish_connection(app_handle: &AppHandle) -> Result<SqlitePool> 
         .connect_with(connection_options)
         .await?;
 
+    // Optimización de la base de datos (VACUUM y PRAGMA optimize)
+    // Esto garantiza que el archivo de base de datos se desfragmente y los índices se optimicen para producción.
+    sqlx::query("PRAGMA optimize;").execute(&pool).await?;
+    sqlx::query("VACUUM;").execute(&pool).await?;
+
     run_migrations(&pool).await?;
 
     Ok(pool)
