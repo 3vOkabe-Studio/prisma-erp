@@ -1,0 +1,8 @@
+pub mod product;
+pub mod invoice;
+pub mod customer;
+pub mod cash;
+pub mod supplier;
+pub mod expense;
+pub mod movement;
+pub mod search;
