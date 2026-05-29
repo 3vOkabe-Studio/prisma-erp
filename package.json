@@ -1,6 +1,6 @@
 {
   "name": "prisma-erp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "El Sistema de Planificación de Recursos Empresariales Offline-First del Futuro",
   "type": "module",
   "scripts": {
