@@ -16,11 +16,15 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '22'
         cache: 'npm'
 
     - name: Install Frontend Dependencies
-      run: npm ci
+      shell: bash
+      run: |
+        rm -rf package-lock.json node_modules
+        npm install -g npm@latest
+        npm install
 
     - name: Install System Dependencies for Tauri
       run: |
