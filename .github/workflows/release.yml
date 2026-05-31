@@ -27,7 +27,10 @@ jobs:
           cache: 'npm'
 
       - name: Install Frontend Dependencies
-        run: npm install
+        shell: bash
+        run: |
+          rm -rf package-lock.json node_modules
+          npm install
 
       - name: Install System Dependencies for Tauri (Linux)
         if: matrix.platform == 'ubuntu-22.04'
