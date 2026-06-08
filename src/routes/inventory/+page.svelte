@@ -313,12 +313,11 @@
           <label class="block text-sm font-medium text-text-muted mb-1" for="category">Categoría</label>
           <input id="category" type="text" bind:value={newProduct.category} class="w-full px-3 py-2 border border-border rounded-md bg-base text-text-main" />
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-3 gap-4">
           <div>
             <label class="block text-sm font-medium text-text-muted mb-1" for="stock">Stock</label>
             <input id="stock" type="number" bind:value={newProduct.current_stock} class="w-full px-3 py-2 border border-border rounded-md bg-base text-text-main" />
           </div>
-        <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-text-muted mb-1" for="cost">Costo</label>
             <input id="cost" type="number" step="0.01" bind:value={newProduct.cost} class="w-full px-3 py-2 border border-border rounded-md bg-base text-text-main" />
