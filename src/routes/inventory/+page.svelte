@@ -1,6 +1,8 @@
 <script lang="ts">
   import { Plus, Search, Filter, MoreVertical, Edit, Trash2 } from '@lucide/svelte';
   import { invoke } from '@tauri-apps/api/core';
+  import JsBarcode from 'jsbarcode';
+  import QRCode from 'qrcode';
 
   // State using Runes
   // State using Runes
@@ -26,7 +28,7 @@
 
   // Create Product Modal State
   let showCreateModal = $state(false);
-  let newProduct = $state({ name: '', sku: '', category: '', current_stock: 0, price: 0, min_stock: 0, cost: 0, barcode: '' });
+  let newProduct = $state({ name: '', sku: '', category: '', current_stock: 0, price: 0, min_stock: 0, cost: 0, barcode: '', qr_code: '' });
 
   async function handleCreateProduct() {
     try {
@@ -37,7 +39,7 @@
       }
       showCreateModal = false;
       editingProductId = null;
-      newProduct = { name: '', sku: '', category: '', current_stock: 0, price: 0, min_stock: 0, cost: 0, barcode: '' };
+      newProduct = { name: '', sku: '', category: '', current_stock: 0, price: 0, min_stock: 0, cost: 0, barcode: '', qr_code: '' };
       // Reload products
       products = await invoke('get_products');
     } catch (e) {
@@ -58,7 +60,8 @@
       price: product.price || 0, 
       min_stock: product.min_stock || 0, 
       cost: product.cost || 0, 
-      barcode: product.barcode || '' 
+      barcode: product.barcode || '',
+      qr_code: product.qr_code || ''
     };
     showCreateModal = true;
   }
@@ -83,6 +86,18 @@
     searchTimeout = setTimeout(() => {
       searchQuery = rawSearchQuery;
     }, 250);
+  });
+
+  $effect(() => {
+    if (showCreateModal && editingProductId) {
+      setTimeout(() => {
+        try {
+          if (newProduct.barcode) JsBarcode("#barcode-canvas", newProduct.barcode, { format: "CODE128", width: 1.5, height: 40, displayValue: true, background: "transparent", lineColor: "#000" });
+          const qrCanvas = document.getElementById('qrcode-canvas');
+          if (qrCanvas && newProduct.qr_code) QRCode.toCanvas(qrCanvas, newProduct.qr_code, { width: 80, margin: 1, color: { dark: "#000", light: "#0000" } });
+        } catch(e) { console.log(e); }
+      }, 100);
+    }
   });
 
   let currentPage = $state(1);
@@ -164,6 +179,7 @@
               <th class="px-6 py-4 font-medium">Producto</th>
               <th class="px-6 py-4 font-medium">Categoría</th>
               <th class="px-6 py-4 font-medium">Stock</th>
+              <th class="px-6 py-4 font-medium">Costo</th>
               <th class="px-6 py-4 font-medium">Precio</th>
               <th class="px-6 py-4 font-medium text-right">Acciones</th>
             </tr>
@@ -199,6 +215,7 @@
                       </span>
                     </div>
                   </td>
+                  <td class="px-6 py-4 font-medium text-text-muted">${product.cost.toFixed(2)}</td>
                   <td class="px-6 py-4 font-medium">${product.price.toFixed(2)}</td>
                   <td class="px-6 py-4 text-right">
                     <div class="flex items-center justify-end gap-2">
@@ -301,11 +318,28 @@
             <label class="block text-sm font-medium text-text-muted mb-1" for="stock">Stock</label>
             <input id="stock" type="number" bind:value={newProduct.current_stock} class="w-full px-3 py-2 border border-border rounded-md bg-base text-text-main" />
           </div>
+        <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-text-muted mb-1" for="price">Precio</label>
+            <label class="block text-sm font-medium text-text-muted mb-1" for="cost">Costo</label>
+            <input id="cost" type="number" step="0.01" bind:value={newProduct.cost} class="w-full px-3 py-2 border border-border rounded-md bg-base text-text-main" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-muted mb-1" for="price">Precio Venta</label>
             <input id="price" type="number" step="0.01" bind:value={newProduct.price} class="w-full px-3 py-2 border border-border rounded-md bg-base text-text-main" />
           </div>
         </div>
+        {#if editingProductId}
+          <div class="flex gap-4 items-center justify-center border border-border p-4 rounded-md bg-base">
+            <div class="flex flex-col items-center">
+              <span class="text-xs text-text-muted mb-2">Código de Barras</span>
+              <svg id="barcode-canvas" class="bg-white rounded p-1"></svg>
+            </div>
+            <div class="flex flex-col items-center border-l border-border pl-4">
+              <span class="text-xs text-text-muted mb-2">Código QR</span>
+              <canvas id="qrcode-canvas" class="bg-white rounded p-1"></canvas>
+            </div>
+          </div>
+        {/if}
       </div>
       <div class="mt-6 flex justify-end gap-3">
         <button onclick={() => showCreateModal = false} class="px-4 py-2 border border-border rounded-md font-medium hover:bg-surface-hover">Cancelar</button>

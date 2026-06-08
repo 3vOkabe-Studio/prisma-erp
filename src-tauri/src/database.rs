@@ -50,6 +50,7 @@ async fn run_migrations(pool: &SqlitePool) -> Result<()> {
             name TEXT NOT NULL,
             sku TEXT UNIQUE,
             barcode TEXT,
+            qr_code TEXT,
             category TEXT,
             current_stock REAL DEFAULT 0,
             min_stock REAL DEFAULT 0,
@@ -126,6 +127,18 @@ async fn run_migrations(pool: &SqlitePool) -> Result<()> {
             notes TEXT,
             date DATETIME DEFAULT CURRENT_TIMESTAMP
         );
+
+        CREATE TABLE IF NOT EXISTS settings (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            company_name TEXT,
+            company_address TEXT,
+            company_phone TEXT,
+            company_email TEXT,
+            logo_base64 TEXT,
+            signature_text TEXT,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT OR IGNORE INTO settings (id, company_name) VALUES (1, 'Mi Empresa');
 
         -- Índices de Rendimiento y Búsqueda
         CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku);

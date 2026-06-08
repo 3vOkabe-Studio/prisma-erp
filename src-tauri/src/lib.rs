@@ -24,6 +24,7 @@ pub fn run() {
             commands::products::get_inventory_movements,
             commands::products::get_low_stock_products,
             commands::invoices::get_invoices,
+            commands::invoices::get_invoice_items,
             commands::invoices::create_invoice,
             commands::customers::get_customers,
             commands::customers::create_customer,
@@ -39,6 +40,8 @@ pub fn run() {
             commands::reports::get_weekly_sales,
             commands::reports::get_recent_invoices,
             commands::reports::get_stock_alerts,
+            commands::settings::get_settings,
+            commands::settings::update_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

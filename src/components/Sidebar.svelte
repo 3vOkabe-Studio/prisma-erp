@@ -7,7 +7,8 @@
     Truck,
     Wallet,
     ReceiptText,
-    BarChart3
+    BarChart3,
+    Settings
   } from '@lucide/svelte';
 
   const menuItems = [
@@ -19,6 +20,7 @@
     { name: 'Caja', icon: Wallet, href: '/cash' },
     { name: 'Gastos', icon: ReceiptText, href: '/expenses' },
     { name: 'Reportes', icon: BarChart3, href: '/reports' },
+    { name: 'Configuración', icon: Settings, href: '/settings' },
   ];
 </script>
 

@@ -15,15 +15,28 @@ pub async fn create_product(
     new_product: CreateProduct,
     pool: State<'_, SqlitePool>,
 ) -> Result<Product, String> {
+    let mut final_barcode = new_product.barcode.clone();
+    let mut final_qr = new_product.qr_code.clone();
+
+    if final_barcode.is_none() || final_barcode.as_ref().unwrap().is_empty() {
+        let ts = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis();
+        final_barcode = Some(format!("{}", ts));
+    }
+    if final_qr.is_none() || final_qr.as_ref().unwrap().is_empty() {
+        let ts = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_micros();
+        final_qr = Some(format!("QR-{}", ts));
+    }
+
     let result = sqlx::query(
         r#"
-        INSERT INTO products (name, sku, barcode, category, current_stock, min_stock, cost, price)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO products (name, sku, barcode, qr_code, category, current_stock, min_stock, cost, price)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#
     )
     .bind(&new_product.name)
     .bind(&new_product.sku)
-    .bind(&new_product.barcode)
+    .bind(&final_barcode)
+    .bind(&final_qr)
     .bind(&new_product.category)
     .bind(new_product.current_stock)
     .bind(new_product.min_stock)
@@ -58,13 +71,14 @@ pub async fn update_product(
     sqlx::query(
         r#"
         UPDATE products 
-        SET name = ?, sku = ?, barcode = ?, category = ?, current_stock = ?, min_stock = ?, cost = ?, price = ?
+        SET name = ?, sku = ?, barcode = ?, qr_code = ?, category = ?, current_stock = ?, min_stock = ?, cost = ?, price = ?
         WHERE id = ?
         "#
     )
     .bind(&product.name)
     .bind(&product.sku)
     .bind(&product.barcode)
+    .bind(&product.qr_code)
     .bind(&product.category)
     .bind(product.current_stock)
     .bind(product.min_stock)

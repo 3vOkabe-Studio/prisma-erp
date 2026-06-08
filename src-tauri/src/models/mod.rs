@@ -6,3 +6,4 @@ pub mod supplier;
 pub mod expense;
 pub mod movement;
 pub mod search;
+pub mod setting;

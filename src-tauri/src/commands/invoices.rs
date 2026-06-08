@@ -104,3 +104,19 @@ pub async fn get_invoices(pool: State<'_, SqlitePool>) -> Result<Vec<Invoice>, S
         .await
         .map_err(|e| e.to_string())
 }
+
+#[tauri::command]
+pub async fn get_invoice_items(invoice_id: i64, pool: State<'_, SqlitePool>) -> Result<Vec<crate::models::invoice::InvoiceItemView>, String> {
+    sqlx::query_as::<_, crate::models::invoice::InvoiceItemView>(
+        r#"
+        SELECT i.id, i.invoice_id, i.product_id, p.name as product_name, i.quantity, i.price, i.subtotal
+        FROM invoice_items i
+        LEFT JOIN products p ON i.product_id = p.id
+        WHERE i.invoice_id = ?
+        "#
+    )
+    .bind(invoice_id)
+    .fetch_all(&*pool)
+    .await
+    .map_err(|e| e.to_string())
+}

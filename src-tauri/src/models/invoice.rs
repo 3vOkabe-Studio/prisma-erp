@@ -13,6 +13,17 @@ pub struct Invoice {
     pub created_at: Option<chrono::NaiveDateTime>,
 }
 
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct InvoiceItemView {
+    pub id: i64,
+    pub invoice_id: i64,
+    pub product_id: i64,
+    pub product_name: Option<String>,
+    pub quantity: f64,
+    pub price: f64,
+    pub subtotal: f64,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct CreateInvoiceItem {
     pub product_id: i64,
